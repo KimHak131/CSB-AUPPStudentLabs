@@ -9,7 +9,7 @@ class SchoolAssessmentSystem:
     def process_file(self, file_path): 
         file_extension = file_path.split('.')[-1].lower()
         
-        #Process CSV file
+        # Process CSV file
         if file_extension == "csv":
             self.data = pd.read_csv(file_path) 
 
@@ -22,7 +22,7 @@ class SchoolAssessmentSystem:
             with open(file_path, "r") as file:
                 lines = file.readlines
         else:
-            print(f"Unsupported file formate {file_extension}")
+            print(f"Unsupported file format {file_extension}")
 
     def transfer_data(self):
         pass
@@ -38,6 +38,6 @@ class SchoolAssessmentSystem:
 assessment_system = SchoolAssessmentSystem()
 
 # Call the process_file method on the instance as CSV file format
-assessment_system.process_file(r"D:/Spring Y2/Computer Science B/CSB-AUPPStudentLabs/data_107326465.csv")
+assessment_system.process_file(r"D:/Spring Y2/Computer Science B/CSB-AUPPStudentLabs/Spring.csv")
 
 print(assessment_system.data)
