@@ -1,6 +1,6 @@
 # CSB-AUPPStudentLabs-SDT
 # School File Management System
-Create an application for a school system using Python to open and process files of different formats, transfer data, fetch information from school webpages, analyze content, and generate summaries for the school principal about students' assessment activities.
+Create an application for a school system using Python to open and process files of different formats, transfer data, fetch information from school webpages, analyze content, and generate summaries for the school principal about students' assessment activities. Implement Exception Handling techniques for controling database accessiblity and connection.
 
 *School Assessment Data Analysis Application Objective:*
 The school administration wants to streamline the process of collecting, analyzing, and summarizing assessment data for the principal. The application should be able to handle various file formats, extract information from webpages, and provide insightful summaries for better decision-making.
