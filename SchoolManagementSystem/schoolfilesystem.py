@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 class SchoolAssessmentSystem:
     def __init__(self):
         self.data = None
-
+        
 
     def process_file(self, file_path):           
         
@@ -44,8 +44,10 @@ class SchoolAssessmentSystem:
         # Parse HTML using BeautifulSoup
         soup = BeautifulSoup(html_content, 'html.parser')
 
-    def analyze_content(self):
+    def analyze_content(self, file_path):
         try:
+            self.df = self.process_file(file_path)
+
             # Separate Scholarship and Full-paid students
             scholarship_data = self.df[self.df['Position'] == 'Scholarship']
             full_paid_data = self.df[self.df['Position'] == 'Full-paid']
@@ -55,45 +57,55 @@ class SchoolAssessmentSystem:
             full_paid_avg = full_paid_data[['COSC_221', 'COSC_241', 'INFO_652', 'LEGL_101', 'MATH_234A']].mean(axis=1).mean()
 
             # Identify top scorer in Scholarship and Full-paid categories
-            top_scorer_scholarship = scholarship_data.nlargest(1, 'Total_score')[["Student_Name", "Total_score"]].to_dict(orient='records')
-            top_scorer_full_paid = full_paid_data.nlargest(1, 'Total_score')[["Student_Name", "Total_score"]].to_dict(orient='records')
+            top_scorer_scholarship = scholarship_data.nlargest(1, 'MATH_234A')[["Student_Name", "MATH_234A", 'Position']].to_dict(orient='records')
+            top_scorer_full_paid = full_paid_data.nlargest(1, 'MATH_234A')[["Student_Name", "MATH_234A", 'Position']].to_dict(orient='records')
 
-            # Provide the statements
-            if scholarship_avg > full_paid_avg:
-                self.statement = f"Average Score for Scholarship students is higher than Full-paid students."
-            elif scholarship_avg < full_paid_avg:
-                self.statement = f"Average Score for Full-paid students is higher than Scholarship students."
-            else:
-                self.statement = "Average Scores for Scholarship and Full-paid students are equal."
-
-            print(f"Average Score for Scholarship students: {round(scholarship_avg, 4)}")
-            print(f"Average Score for Full-paid students: {round(full_paid_avg, 4)}")
-            print(f"Top Scorer in Scholarship category: {top_scorer_scholarship}")
-            print(f"Top Scorer in Full-paid category: {top_scorer_full_paid}")
+            return {
+                "total_average": (scholarship_avg + full_paid_avg) / 2,
+                "subject_averages": self.df[['COSC_221', 'COSC_241', 'INFO_652', 'LEGL_101', 'MATH_234A']].mean(),
+                "class_subject_averages": self.df.groupby('Position')[['COSC_221', 'COSC_241', 'INFO_652', 'LEGL_101', 'MATH_234A']].mean(),
+                "highest_average_each_position": [top_scorer_scholarship, top_scorer_full_paid]
+            }
 
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
+            return None
 
-    def generate_summary(self):
+    def generate_summary(self, analysis_data):
         try:
+            if analysis_data is None:
+                print("Cannot generate summary. Analysis data is None.")
+                return
+
             print("School Assessment Summary Report:")
-            print("\n1. Average Scores:")
-            print(f"   - Average Score for Scholarship students: {round(scholarship_avg, 4)}")
-            print(f"   - Average Score for Full-paid students: {round(full_paid_avg, 4)}")
-            
-            print("\n2. Top Scorers:")
-            print(f"   - Top Scorer in Scholarship category: {top_scorer_scholarship}")
-            print(f"   - Top Scorer in Full-paid category: {top_scorer_full_paid}")
 
-            print("\n3. Comparison:")
-            print(f"   - {self.statement}")
+            # Overall Analysis
+            print("\n1. Overall Analysis:")
+            print(f"   - Total Grade Average: {round(analysis_data['total_average'], 4)}")
 
-            print("\nReport generated on:", date.today())
+            # Subject-wise Analysis
+            print("\n2. Subject-wise Analysis:")
+            for subject, average in analysis_data['subject_averages'].items():
+                print(f"   - {subject}: {round(average, 4)}")
+
+            # Class-wise Analysis
+            print("\n3. Class-wise Analysis:")
+            for position, averages in analysis_data['class_subject_averages'].iterrows():
+                print(f"   - {position}: {averages.to_dict()}")
+
+            # Top Scorer in Each Position
+            print("\n4. Top Scorer in Each Position:")
+            for record in analysis_data['highest_average_each_position']:
+                print(f"   - Position: {record[0]['Position']}, Top Scorer: {record[0]['Student_Name']} (Score: {record[0]['MATH_234A']})")
+
 
         except Exception as e:
             print(f"An unexpected error occurred while generating the summary: {e}")
 
+
 sss = SchoolAssessmentSystem()
+analysis_data = sss.analyze_content('D:/Spring Y2/Computer Science B/CountEachLetter/CSB-AUPPStudentLabs/SchoolManagementSystem/all_classes_concatenated.csv')
+
 # sss.transfer_data('D:/Spring Y2/Computer Science B/CountEachLetter/CSB-AUPPStudentLabs/SchoolManagementSystem/Spring.csv', 'D:/Spring Y2/Computer Science B/CountEachLetter/CSB-AUPPStudentLabs/SchoolManagementSystem/bothsms.csv')
 
 # print(sss.fetch_web_data('https://www.janison.com/resources/post/a-guide-to-5-school-assessment-types-and-their-key-purposes/'))
