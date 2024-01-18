@@ -91,6 +91,29 @@ class MusicLibrary:
         playlist = Playlist(playlist_name)
         if playlist not in self.playlists:
             self.playlists.append(playlist)
+            self.save_playlists_to_csv()  # Save playlists to CSV
+            print(f"Playlist '{playlist_name}' added successfully.")
+        else:
+            print(f"Playlist '{playlist_name}' already exists.")
+    
+    def add_playlist(self, playlist_name):
+        playlist = Playlist(playlist_name)
+        if playlist not in self.playlists:
+            self.playlists.append(playlist)
+            self.save_playlists_to_csv()  # Save playlists to CSV
+            print(f"Playlist '{playlist_name}' added successfully.")
+            
+            # Add songs to the playlist
+            self.add_song_to_playlist(playlist)
+        else:
+            print(f"Playlist '{playlist_name}' already exists.")
+
+    def save_playlists_to_csv(self):
+        with open('playlists.csv', mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            for playlist in self.playlists:
+                for song in playlist.songs:
+                    writer.writerow([song.title, song.artist, song.album, song.genre, song.length, playlist.name])
             
     def delete_playlist(self, playlist_name):
         playlist_to_delete = None
