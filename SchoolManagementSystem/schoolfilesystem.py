@@ -75,7 +75,6 @@ class SchoolAssessmentSystem:
             print(f"An unexpected error occurred: {e}")
 
     def generate_summary(self):
-        def generate_summary(self):
         try:
             print("School Assessment Summary Report:")
             print("\n1. Average Scores:")
